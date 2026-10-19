@@ -123,6 +123,11 @@ async function boot(width, height) {
   const qrShim = await (await fetch("browser_qr.py")).text();
   pyodide.FS.writeFile("/wallet/browser_qr.py", qrShim);
 
+  if (firmware === "bitwasm") {
+    const wasmShim = await (await fetch("browser_wasm.py")).text();
+    pyodide.FS.writeFile("/wallet/browser_wasm.py", wasmShim);
+  }
+
   post("status", { stage: "starting", message: "starting wallet…" });
 
   // Frames come back through this callback rather than being polled.
@@ -446,6 +451,11 @@ subprocess.call = _failed_call
 for _name in ("run", "check_call", "check_output", "Popen"):
     setattr(subprocess, _name, _no_such_binary)
 
+# SeedSigner dev reads its version with os.popen("git ..."), which a shell with
+# no git answers with empty output; that is what it falls back on.
+import io as _io, os as _os
+_os.popen = lambda *args, **kwargs: _io.StringIO("")
+
 # --- and no TCP/IP, which is what the device has -----------------------------
 # From ShSi-B13 the fork checks the system it is running on before the home
 # screen, and stops on an "Unhardened Build" warning if any exposure is open
@@ -591,6 +601,11 @@ browser_camera.install(js_camera)
 # --- the screens that show a QR draw from a thread this port cannot run ------
 import browser_qr
 browser_qr.install(_poll_button)
+
+# --- bitwasm: the page's WebAssembly engine stands in for WAMR ----------------
+if ${firmware === "bitwasm" ? "True" : "False"}:
+    import browser_wasm
+    sys.modules["bitwasm_signer.wamr"] = browser_wasm
 
 # --- which smartcard is in the reader is the page's to say --------------------
 # The pyscard stand-in ships with the wallet, so unlike the camera there is

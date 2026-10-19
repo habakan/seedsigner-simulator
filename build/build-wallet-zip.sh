@@ -107,9 +107,9 @@ while [ "$#" -gt 0 ]; do
 done
 
 case "${FIRMWARE}" in
-    smartcard|stock|doomsigner) ;;
-    "")  echo "which firmware? one of: smartcard stock doomsigner" >&2; usage >&2; exit 2 ;;
-    *)   echo "no such firmware: ${FIRMWARE} (one of: smartcard stock doomsigner)" >&2; exit 2 ;;
+    smartcard|stock|doomsigner|bitwasm) ;;
+    "")  echo "which firmware? one of: smartcard stock doomsigner bitwasm" >&2; usage >&2; exit 2 ;;
+    *)   echo "no such firmware: ${FIRMWARE} (one of: smartcard stock doomsigner bitwasm)" >&2; exit 2 ;;
 esac
 
 die() {
@@ -492,6 +492,36 @@ STAGE_PACKAGES=(
 )
 
 ;;
+bitwasm)
+
+# habakan/seedsigner: dev with PSBT review and signing moved to bitwasm-signer's
+# parser.wasm and signer.wasm. Pins are its requirements.txt's, minus Pillow and
+# pyzbar for the reasons stock gives; bitwasm_signer comes from its own src/.
+read -r -d '' DEPENDENCIES <<'DEPS' || true
+pypi|embit|embit|0.8.0|https://files.pythonhosted.org/packages/83/88/b054b00ade6d2a41749e15976cdcec4b7ec4656ac1cb917ce3de395528d1/embit-0.8.0.tar.gz|8bf4b10073c67400370ce523fb16f035fe759f6fdd987c579bdcc268d75ed770|embit-0.8.0/src
+pypi|qrcode|qrcode|8.0|https://files.pythonhosted.org/packages/d7/db/6fc9631cac1327f609d2c8ae3680ecd987a2e97472437f2de7ead1235156/qrcode-8.0.tar.gz|025ce2b150f7fe4296d116ee9bad455a6643ab4f6e7dce541613a4758cbce347|qrcode-8.0
+git|urtypes|urtypes|7fb280eab3b3563dfc57d2733b0bf5cbc0a96a6a|https://github.com/selfcustody/urtypes.git|7fb280eab3b3563dfc57d2733b0bf5cbc0a96a6a|src
+DEPS
+
+EXPECTED_TOP_LEVEL=(
+    LICENSE.md
+    RPi
+    bitwasm_signer
+    embit
+    licenses
+    main.py
+    pyzbar
+    qrcode
+    seedsigner
+    urtypes
+)
+
+STAGE_PACKAGES=(
+    "${REPO_ROOT}/src/fakes/RPi:RPi:import stand-in, not RPi.GPIO"
+    "${REPO_ROOT}/src/fakes/pyzbar:pyzbar:import stand-in, not pyzbar"
+)
+
+;;
 esac
 
 # ---------------------------------------------------------------------------
@@ -788,6 +818,9 @@ rm -rf -- "${UPSTREAM_SRC}/.git"
 # filesystem after unpacking) and by the stand-in packages staged below.
 cp -R -- "${UPSTREAM_SRC}/src/seedsigner" "${STAGING}/seedsigner"
 cp    -- "${UPSTREAM_SRC}/src/main.py"    "${STAGING}/main.py"
+if [ "${FIRMWARE}" = "bitwasm" ]; then
+    cp -R -- "${UPSTREAM_SRC}/src/bitwasm_signer" "${STAGING}/bitwasm_signer"
+fi
 
 # The MIT notice travels with the code it covers.
 cp    -- "${UPSTREAM_SRC}/LICENSE.md"     "${STAGING}/LICENSE.md"

@@ -63,6 +63,7 @@ const SHELL = [
   "./ur-decode.js",
   "./browser_camera.py",
   "./browser_qr.py",
+  "./browser_wasm.py",
   "./browser_display.py",
   "./manifest.json",
   "./icon-192-1ebb8267.png",

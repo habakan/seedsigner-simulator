@@ -75,6 +75,17 @@ wallet_zip_sha256          = d1a28a023dd690ab571ae6ab42c117ae74cd7ff9f135b771f8d
 wallet_zip_contents_sha256 = 73ff07c0d650d1da8efaa53d42e3e5f444b53d94e21a25aa2a41ea5b3a0d1ef1
 
 
+# habakan/seedsigner: SeedSigner dev with PSBT review and signing moved to
+# bitwasm-signer's wasm modules. Ours, and a branch commit rather than a tag, so
+# no hashes are published for it yet.
+[bitwasm]
+repo   = https://github.com/habakan/seedsigner.git
+commit = ebd8e38205b2ea54e46b35bf662020cf81bdeb9e
+tag    = none: feat/bitwasm-signer
+
+wallet_zip_sha256          = 8d1a71e52a6bb7c4b7348732210596490a2a30c294b585d1a31c81d75e6c8f55
+wallet_zip_contents_sha256 = 7dc013ceeb013f2105219f6b7e8c58b604c6e117920fd3db75c8d2877cfb84db
+
 
 # The two smartcard applets, pinned as a reference rather than as an input.
 #

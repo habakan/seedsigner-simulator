@@ -1205,7 +1205,7 @@ const E2E = new URLSearchParams(location.search).has("e2e");
 // file to fetch. Doomsigner carries MuSig2; there is no separate musig
 // firmware any more, it was folded into Doomsigner because MuSig2 is the point
 // of Doomsigner.
-const FIRMWARES = ["stock", "smartcard", "doomsigner"];
+const FIRMWARES = ["stock", "smartcard", "doomsigner", "bitwasm"];
 const search = new URLSearchParams(location.search);
 // Regtest joins mainnet and testnet because a MuSig2 spend has to be driven
 // against a node that will actually relay it, and the only such node here is a
@@ -1317,6 +1317,15 @@ const FIRMWARE_INFO = {
            "Five taps on the top side button cycle the game and the wallet. The " +
            "in-memory seed is earthdiver's first published test vector from " +
            "SeedSigner #769, fingerprint 24c323b5",
+  },
+  bitwasm: {
+    button: "bitwasm",
+    says: "Running habakan/seedsigner: SeedSigner dev with PSBT review and " +
+          "signing done by bitwasm-signer's signer.wasm, on this browser's " +
+          "WebAssembly engine instead of WAMR.",
+    panel: "our fork of SeedSigner dev, where nothing is signed unless " +
+           "signer.wasm's review of the same PSBT agrees with embit's, and only " +
+           "signer.wasm signs",
   },
 };
 
